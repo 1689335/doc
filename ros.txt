@@ -1,0 +1,77 @@
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install ros-jade-desktop-full
+sudo rosdep init
+rosdep update
+
+echo "source /opt/ros/jade/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
+//
+sudo sh -c 'echo "deb http://mirrors.tuna.tqinghua.edu.cn/ros/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+
+// ustc 源
+sudo sh -c 'echo "deb http://mirrors.ustc.edu.cn/ros/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://pool.sks-keyservers.net --recv-key 0xB01FA116
+sudo apt-get update
+sudo apt-get install ros-kinetic-desktop-full
+sudo rosdep init
+rosdep update
+
+//rosdep init updat 失败：
+解决方案0x01
+如果你正遇到这个问题，那么第一个解决方案就是，更换网络，你可以尝试使用你的手机热点，然后继续尝试以下指令，如果你成功了，那么你可以结束本文章的阅读，当然欢迎你继续阅读。
+sudo rosdep init
+rosdep update
+
+解决方案0x02
+该解决方案是针对由于以下两个无法正常访问，但可以ping通，于是修改hosts文件，加入以下两个网址的IP地址实现访问。
+ip地址使用ping获得
+sudo gedit /etc/hosts
+
+151.101.0.133 raw.githubusercontent.com
+151.101.0.133 raw.github.com
+修改完成后，在终端执行
+
+sudo rosdep init
+rosdep update
+
+
+解决方案0x03
+如果使用解决方案0x01仍然无法解决你的问题，那么你可以尝试以下步骤，此解决方案的原理是基于手动完成sudo rosdep init的步骤，然后再通过rosdep update完成整个方案的实施。
+步骤一：首先打开一个终端，执行以下指令创建root并切换至root用户
+
+sudo passwd    //接着提示输入UNIX密码，输入你的用户密码即可
+sudo su //或者su root 然后输入密码切换至root用户
+sudo mkdir -p /etc/ros/rosdep/sources.list.d
+cd /etc/ros/rosdep/sources.list.d
+sudo gedit 20-default.list
+步骤二：将以下内容复制进20-default.list文件中
+
+# os-specific listings first
+yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/osx-homebrew.yaml osx
+
+# generic
+yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/base.yaml
+yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml
+yaml https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/ruby.yaml
+gbpdistro https://raw.githubusercontent.com/ros/rosdistro/master/releases/fuerte.yaml fuerte
+
+# newer distributions (Groovy, Hydro, ...) must not be listed anymore, they are being fetched from the rosdistro index.yaml instead
+步骤三：执行以下指令
+
+exit //退出root用户
+rosdep update
+如果你成功了，那么你可以结束本文章的阅读，当然欢迎你继续阅读。
+
+但也许你会遇到如下图所示的问题，发现20-default.list中的地址都无法连接，此时你可以将20-default.list中的内容替换如下，即将raw.githubusercontent.com替换为raw.github.com后保存文件，在终端中执行
+
+rosdep update
+
+
+IDE:
+
+https://github.com/TonyRobotics/RoboWare-Studio
+https://codechina.csdn.net/mirrors/tonyrobotics/roboware?utm_source=csdn_github_accelerator
